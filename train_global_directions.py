@@ -3,6 +3,7 @@ import torch
 from argparse import Namespace
 from tqdm import trange, tqdm
 
+import clip
 from StyleGAN import load_generator
 
 stylegan_size=1024
@@ -31,7 +32,7 @@ def calculate_global_directions(generator, latent_avg, clip_model, test_step_len
                     img2, _ = generator([batch + dlat], input_is_latent=True, randomize_noise=False)
                     img_tar = enc_img(clip_model, img2)
                     # rel[i, j] += cos_sim(dt, (img_tar - img_neut))[0].cpu()
-                    rel[i, j] += (img_tar - img_neut).cpu()
+                    rel[i, j] += (img_tar - img_neut).sum(0).cpu()
         if save_name is not None and save_rate is not None and epoch % save_rate == save_rate-1:
             torch.save(rel, f'{save_name}_{epoch}.pt')
     return rel
@@ -52,6 +53,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    clip_model, preprocess = clip.load("ViT-B/32", device=args.device)
     generator, latent_avg = load_generator(args.generator, device=args.device, stylegan_size=stylegan_size, style_dim=512, n_mlp=8)
 
     global_dirs = calculate_global_directions(generator=generator, latent_avg=latent_avg,
