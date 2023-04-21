@@ -1,7 +1,6 @@
 import argparse
 import torch
 from argparse import Namespace
-from matplotlib import pyplot as plt
 from tqdm import trange, tqdm
 
 import clip
