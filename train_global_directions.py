@@ -52,7 +52,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    clip_model, preprocess = clip.load("ViT-B/32", device=args.device)
     generator, latent_avg = load_generator(args.generator, device=args.device, stylegan_size=stylegan_size, style_dim=512, n_mlp=8)
 
     global_dirs = calculate_global_directions(generator=generator, latent_avg=latent_avg,
