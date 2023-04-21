@@ -3,9 +3,7 @@ import torch
 from argparse import Namespace
 from tqdm import trange, tqdm
 
-import clip
 from StyleGAN import load_generator
-import e4e
 
 stylegan_size=1024
 upsample = torch.nn.Upsample(scale_factor=7)
