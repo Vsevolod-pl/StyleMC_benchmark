@@ -15,6 +15,8 @@ def optimization(generator, description, latent_code_init, device='cuda', lr_ram
     clip_loss = CLIPLoss(stylegan_size, device=device).to(device)
     if id_lambda > 0:
         id_loss = IDLoss(ir_se50_weights).to(device)
+        with torch.no_grad():
+            img_orig, _ = generator([latent_code_init.to(device)], input_is_latent=True, randomize_noise=False)
 
     text_inputs = clip.tokenize(description).to(device)
 
