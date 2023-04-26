@@ -11,7 +11,7 @@ from id_loss import IDLoss
 from StyleGAN import load_generator
 from levels_mapper import LevelsMapper
 
-def train(generator, latent_avg, description, mapper, num_epochs=10, batch_size=10, lr=0.1, l2_lambda=0.8, id_lambda=0.1, device='cuda', ir_se50_weights='./model_ir_se50.pth', save_name=None, save_rate=None, debug=False, stylegan_size=1024, truncation=0.8):
+def train(generator, latent_avg, description, mapper, num_epochs=10, batch_size=2, lr=1e-3, l2_lambda=0.8, id_lambda=0.1, device='cuda', ir_se50_weights='./model_ir_se50.pth', save_name=None, save_rate=None, debug=False, stylegan_size=1024, truncation=0.8):
     clip_hist = []
     idl_hist = []
     l2_hist = []
@@ -64,13 +64,13 @@ if __name__ == '__main__':
     parser.add_argument('--style-dim', default=512, type=int)
     parser.add_argument('--n-mlp', default=8, type=int)
     # parser.add_argument('--lr-rampup', default=0.05, type=float)
-    parser.add_argument('--lr', default=0.1, type=float)
-    parser.add_argument('--l2-lambda', default=0.005, type=float)
-    parser.add_argument('--id-lambda', default=0., type=float)
+    parser.add_argument('--lr', default=0.001, type=float)
+    parser.add_argument('--l2-lambda', default=0.8, type=float)
+    parser.add_argument('--id-lambda', default=0.1, type=float)
     parser.add_argument('--truncation', default=0.8, type=float)
-    parser.add_argument('--num-epochs', default=500, type=int)
+    parser.add_argument('--num-epochs', default=50000, type=int)
     parser.add_argument('--batch-size', default=2, type=int)
-    parser.add_argument('--save-rate', default=10, type=int)
+    parser.add_argument('--save-rate', default=2000, type=int)
     parser.add_argument('--debug', default=False)
     parser.add_argument('--ir-se50-weights', default='model_ir_se50.pth')
     args = parser.parse_args()
