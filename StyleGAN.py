@@ -483,7 +483,7 @@ class Generator(nn.Module):
         num_convs=None,
     ):
         if num_convs is None:
-            num_convs = len(self.convs)
+            num_convs = len(self.convs)*10 #TODO fix this
             
         if not input_is_latent and not input_is_stylespace:
             styles = [self.style(s) for s in styles]
