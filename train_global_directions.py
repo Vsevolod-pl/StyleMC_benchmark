@@ -17,7 +17,7 @@ def calculate_global_directions(generator, latent_avg, clip_model, test_step_len
     rel = torch.zeros(18, 512, 512).cpu()
     dlat = torch.zeros(1, 18, 512).to(device)
     cos_sim = torch.nn.CosineSimilarity()
-    for epoch in range(num_epochs):
+    for epoch in trange(num_epochs):
         with torch.no_grad():
             batch = torch.randn(batch_size, 512).to(device)
             img, batch, _ = generator([batch], input_is_latent=False, randomize_noise=False, truncation=0.7, truncation_latent=latent_avg, return_latents=True)
@@ -25,7 +25,7 @@ def calculate_global_directions(generator, latent_avg, clip_model, test_step_len
             del img
             torch.cuda.empty_cache()
 
-            for j in trange(512):
+            for j in range(512):
                 for i in range(18):
                     dlat *= 0
                     dlat[0, i, j] = test_step_len
