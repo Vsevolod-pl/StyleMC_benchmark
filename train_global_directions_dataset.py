@@ -35,8 +35,6 @@ def calculate_global_directions(generator, latent_avg, clip_model, latents, test
                     rel[i, j] += (img_tar - img_neut).sum(0).cpu()
                     del img_tar
                     torch.cuda.empty_cache()
-        if save_name is not None and save_rate is not None and epoch % save_rate == save_rate-1:
-            torch.save(rel, f'{save_name}_{epoch}.pt')
     return rel
 
 
