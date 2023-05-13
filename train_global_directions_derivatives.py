@@ -18,13 +18,19 @@ def enc_lat(generator, clip_model, latents, truncation=0.7, truncation_latent=No
     return enc_img(clip_model, img).sum(0)
 
 
-def calculate_global_directions_der(generator, latent_avg, clip_model, num_epochs=100, batch_size=2, save_name=None, save_rate=None, device='cuda', truncation=0.7):
+def calculate_global_directions_der(generator, latent_avg, clip_model, num_epochs=100, batch_size=2, save_name=None, save_rate=None, device='cuda', truncation=0.7, latents=None):
     rel = torch.zeros(18, 512, 512).cpu()
     enc_lat_p = lambda x: enc_lat(generator, clip_model, x, truncation=truncation, truncation_latent=latent_avg)
+
+    if latents is not None:
+        num_epochs = len(latents)
     
     for epoch in trange(num_epochs):
-        batch = torch.randn(batch_size, 1, 512).to('cuda')
-        batch = batch.expand(batch_size, 18, 512)
+        if latents is not None:
+            batch = latents[epoch]
+        else:
+            batch = torch.randn(batch_size, 1, 512).to('cuda')
+            batch = batch.expand(batch_size, 18, 512)
         rel_i = torch.autograd.functional.jacobian(enc_lat_p, batch)
         rel_i = rel_i.sum(1)
         rel_i = rel_i.transpose_(0, 1).transpose_(1, 2)
