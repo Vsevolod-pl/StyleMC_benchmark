@@ -53,15 +53,20 @@ if __name__ == '__main__':
     parser.add_argument('--batch-size', default=2, type=int)
     parser.add_argument('--save-rate', default=10, type=int)
     parser.add_argument('--truncation', default=0.7, type=float)
+    parser.add_argument('--dataset', default=None)
 
     args = parser.parse_args()
 
     clip_model, preprocess = clip.load("ViT-B/32", device=args.device)
     generator, latent_avg = load_generator(args.generator, device=args.device, stylegan_size=stylegan_size, style_dim=512, n_mlp=8)
 
+    latents = None
+    if args.dataset is not None:
+        latents = torch.load(args.dataset)
+
     global_dirs = calculate_global_directions_der(generator=generator, latent_avg=latent_avg,
                 clip_model=clip_model, num_epochs=args.num_epochs, batch_size=args.batch_size,
                 save_name=args.filename, save_rate=args.save_rate, device=args.device,
-                truncation=args.truncation)
+                truncation=args.truncation, latents=latents)
 
     torch.save(global_dirs, f'{args.filename}.pt')
