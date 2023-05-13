@@ -13,7 +13,7 @@ avg_pool = torch.nn.AvgPool2d(kernel_size=stylegan_size // 32)
 def enc_img(clip_model, img):
     return clip_model.encode_image(avg_pool(upsample(img)))
 
-def calculate_global_directions(generator, latent_avg, clip_model, latents, test_step_len=5, batch_size=1, device='cuda'):
+def calculate_global_directions(generator, clip_model, latents, test_step_len=5, batch_size=1, device='cuda'):
     rel = torch.zeros(18, 512, 512).cpu()
     dlat = torch.zeros(1, 18, 512).to(device)
     test_step_lens = test_step_len*latents.std(0)[0]
@@ -21,7 +21,7 @@ def calculate_global_directions(generator, latent_avg, clip_model, latents, test
     for num_sample in trange(len(latents)):
         with torch.no_grad():
             batch = latents[num_sample].to(device)
-            img, batch, _ = generator([batch], input_is_latent=False, randomize_noise=False, truncation=0.7, truncation_latent=latent_avg, return_latents=True)
+            img, _ = generator([batch], input_is_latent=True, randomize_noise=False)
             img_neut = enc_img(clip_model, img)
             del img
             torch.cuda.empty_cache()
@@ -36,9 +36,6 @@ def calculate_global_directions(generator, latent_avg, clip_model, latents, test
                     del img_tar
                     torch.cuda.empty_cache()
     return rel
-
-
-    save_name is not None
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog='Global directions',)
@@ -58,8 +55,8 @@ if __name__ == '__main__':
 
     dataset = torch.load(args.dataset)
 
-    global_dirs = calculate_global_directions(generator=generator, latent_avg=latent_avg,
-                clip_model=clip_model, test_step_len=args.step_size, latents=dataset,
-                batch_size=args.batch_size, device=args.device)
+    global_dirs = calculate_global_directions(generator=generator,
+        clip_model=clip_model, test_step_len=args.step_size,
+        latents=dataset, batch_size=args.batch_size, device=args.device)
 
     torch.save(global_dirs, f'{args.filename}.pt')
