@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     latents = None
     if args.dataset is not None:
-        latents = torch.load(args.dataset)
+        latents = torch.load(args.dataset).to(args.device)
 
     global_dirs = calculate_global_directions_der(generator=generator, latent_avg=latent_avg,
                 clip_model=clip_model, num_epochs=args.num_epochs, batch_size=args.batch_size,
